@@ -17,7 +17,7 @@ export class DiscussionComponent implements OnInit {
   constructor() {
     this.peer = new Peer({
       //ip adress of aws machine
-      host: '3.89.85.44',
+      host: '52.2.97.128',
       port: 9000, // Update with the port your PeerJS server is running on
       path: '/myapp', // Update with the path you configured
     });
@@ -35,13 +35,16 @@ export class DiscussionComponent implements OnInit {
     this.peer.on('call', (call) => {
       navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true
+        audio: false,
       }).then((stream) => {
         this.lazyStream = stream;
 
         call.answer(stream);
         call.on('stream', (remoteStream) => {
           if (!this.peerList.includes(call.peer)) {
+            console.log("remote stream : ",remoteStream.id);
+            console.log("local stream : ",stream.id);
+            this.streamLocalVideo(stream)
             this.streamRemoteVideo(remoteStream);
             this.currentPeer = call.peerConnection;
             this.peerList.push(call.peer);
@@ -67,6 +70,9 @@ export class DiscussionComponent implements OnInit {
       const call = this.peer.call(id, stream);
       call.on('stream', (remoteStream) => {
         if (!this.peerList.includes(call.peer)) {
+          console.log("remote stream : ",remoteStream.id);
+          console.log("local stream : ",stream.id);
+          this.streamLocalVideo(stream)
           this.streamRemoteVideo(remoteStream);
           this.currentPeer = call.peerConnection;
           this.peerList.push(call.peer);
@@ -76,7 +82,23 @@ export class DiscussionComponent implements OnInit {
       console.log(err + 'Unable to connect');
     });
   }
+  private streamLocalVideo(stream: any): void {
+    const video = document.createElement('video');
+    video.classList.add('video');
+    video.srcObject = stream;
+    video.play();
 
+    const remoteVideoContainer = document.getElementById('emitter-video');
+
+if (remoteVideoContainer !== null) {
+    // Create or obtain your 'video' element
+
+    // Append the 'video' element to the 'remote-video' container
+    remoteVideoContainer.append(video);
+} else {
+    console.error("Remote video container not found.");
+}
+  }
   private streamRemoteVideo(stream: any): void {
     const video = document.createElement('video');
     video.classList.add('video');
@@ -128,5 +150,6 @@ if (remoteVideoContainer !== null) {
     const sender = this.currentPeer.getSenders().find((s: RTCRtpSender)=> s.track?.kind === videoTrack.kind);
     sender.replaceTrack(videoTrack);
   }
+  
 
 }

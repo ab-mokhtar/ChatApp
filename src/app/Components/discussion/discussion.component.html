@@ -5,6 +5,7 @@
   <span>PeerId: {{peerId}}</span>
   <div style="width: 400px; height: 300px; border: 2px solid" id="remote-video"></div>
 
+  <!-- Emitter's video container -->
   <br>
   <div style="margin-top: 20px;">
     <input type="text" placeholder="Peer Id" [(ngModel)]='peerIdShare' />
@@ -12,5 +13,4 @@
     <button class="button" (click)="screenShare()">Screen share</button>
   </div>
   <div style="width: 400px; height: 300px; border: 2px solid" id="emitter-video"></div>
-
 </div>
